@@ -76,7 +76,7 @@ export interface VoteCounterInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "revealVote",
-    values: [BigNumberish, BytesLike, BigNumberish, BytesLike]
+    values: [BigNumberish, BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
@@ -267,8 +267,7 @@ export interface VoteCounter extends BaseContract {
     [
       _electionId: BigNumberish,
       _nullifierHash: BytesLike,
-      _candidateId: BigNumberish,
-      _secret: BytesLike
+      _candidateId: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -333,8 +332,7 @@ export interface VoteCounter extends BaseContract {
     [
       _electionId: BigNumberish,
       _nullifierHash: BytesLike,
-      _candidateId: BigNumberish,
-      _secret: BytesLike
+      _candidateId: BigNumberish
     ],
     [void],
     "nonpayable"

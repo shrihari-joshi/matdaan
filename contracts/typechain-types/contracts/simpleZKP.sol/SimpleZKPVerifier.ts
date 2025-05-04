@@ -55,7 +55,7 @@ export interface SimpleZKPVerifierInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "generateNullifier",
-    values: [BytesLike, BytesLike, BigNumberish]
+    values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -217,7 +217,7 @@ export interface SimpleZKPVerifier extends BaseContract {
   >;
 
   generateNullifier: TypedContractMethod<
-    [_voterHash: BytesLike, _secret: BytesLike, _electionId: BigNumberish],
+    [_voterHash: BytesLike],
     [string],
     "view"
   >;
@@ -277,11 +277,7 @@ export interface SimpleZKPVerifier extends BaseContract {
   ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "generateNullifier"
-  ): TypedContractMethod<
-    [_voterHash: BytesLike, _secret: BytesLike, _electionId: BigNumberish],
-    [string],
-    "view"
-  >;
+  ): TypedContractMethod<[_voterHash: BytesLike], [string], "view">;
   getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;

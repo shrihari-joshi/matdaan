@@ -54,7 +54,7 @@ export interface ElectionManagerInterface extends Interface {
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "registerElection",
-    values: [string, AddressLike, AddressLike]
+    values: [string, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -93,20 +93,17 @@ export namespace ElectionRegisteredEvent {
   export type InputTuple = [
     electionId: BigNumberish,
     title: string,
-    votingContract: AddressLike,
-    counterContract: AddressLike
+    votingContract: AddressLike
   ];
   export type OutputTuple = [
     electionId: bigint,
     title: string,
-    votingContract: string,
-    counterContract: string
+    votingContract: string
   ];
   export interface OutputObject {
     electionId: bigint;
     title: string;
     votingContract: string;
-    counterContract: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -175,11 +172,10 @@ export interface ElectionManager extends BaseContract {
   elections: TypedContractMethod<
     [arg0: BigNumberish],
     [
-      [bigint, string, string, string] & {
+      [bigint, string, string] & {
         id: bigint;
         title: string;
         votingContract: string;
-        counterContract: string;
       }
     ],
     "view"
@@ -188,11 +184,10 @@ export interface ElectionManager extends BaseContract {
   getElectionInfo: TypedContractMethod<
     [_electionId: BigNumberish],
     [
-      [bigint, string, string, string] & {
+      [bigint, string, string] & {
         id: bigint;
         title: string;
         votingContract: string;
-        counterContract: string;
       }
     ],
     "view"
@@ -201,11 +196,7 @@ export interface ElectionManager extends BaseContract {
   owner: TypedContractMethod<[], [string], "view">;
 
   registerElection: TypedContractMethod<
-    [
-      _title: string,
-      _votingContract: AddressLike,
-      _counterContract: AddressLike
-    ],
+    [_title: string, _votingContract: AddressLike],
     [bigint],
     "nonpayable"
   >;
@@ -230,11 +221,10 @@ export interface ElectionManager extends BaseContract {
   ): TypedContractMethod<
     [arg0: BigNumberish],
     [
-      [bigint, string, string, string] & {
+      [bigint, string, string] & {
         id: bigint;
         title: string;
         votingContract: string;
-        counterContract: string;
       }
     ],
     "view"
@@ -244,11 +234,10 @@ export interface ElectionManager extends BaseContract {
   ): TypedContractMethod<
     [_electionId: BigNumberish],
     [
-      [bigint, string, string, string] & {
+      [bigint, string, string] & {
         id: bigint;
         title: string;
         votingContract: string;
-        counterContract: string;
       }
     ],
     "view"
@@ -259,11 +248,7 @@ export interface ElectionManager extends BaseContract {
   getFunction(
     nameOrSignature: "registerElection"
   ): TypedContractMethod<
-    [
-      _title: string,
-      _votingContract: AddressLike,
-      _counterContract: AddressLike
-    ],
+    [_title: string, _votingContract: AddressLike],
     [bigint],
     "nonpayable"
   >;
@@ -290,7 +275,7 @@ export interface ElectionManager extends BaseContract {
   >;
 
   filters: {
-    "ElectionRegistered(uint256,string,address,address)": TypedContractEvent<
+    "ElectionRegistered(uint256,string,address)": TypedContractEvent<
       ElectionRegisteredEvent.InputTuple,
       ElectionRegisteredEvent.OutputTuple,
       ElectionRegisteredEvent.OutputObject

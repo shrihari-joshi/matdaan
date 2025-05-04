@@ -16,6 +16,7 @@ contract Voting is Ownable {
         string title;
         bool isActive;
         mapping(uint256 => Candidate) candidates;
+        mapping(uint256 => uint256) candidateVotes;
         uint256 candidateCount;
         mapping(bytes32 => bool) hasVoted; // nullifier hash => has voted
     }
@@ -26,6 +27,11 @@ contract Voting is Ownable {
     event ElectionCreated(uint256 indexed electionId, string title);
     event VoteCast(uint256 indexed electionId, bytes32 nullifierHash);
     event ElectionEnded(uint256 indexed electionId);
+    event CandidateVoteCount(
+        uint256 candidateId,
+        string name,
+        uint256 voteCount
+    );
 
     constructor() Ownable(msg.sender) {}
 
@@ -59,7 +65,7 @@ contract Voting is Ownable {
     function castVote(
         uint256 _electionId,
         bytes32 _nullifierHash,
-        bytes32 _voteCommitment
+        uint256 candidateToVote
     ) external {
         Election storage election = elections[_electionId];
         require(!election.hasVoted[_nullifierHash], "Already voted");
@@ -67,6 +73,8 @@ contract Voting is Ownable {
         // TODO: Add ZKP verification here
         // For MVP, we'll just record the vote commitment
         election.hasVoted[_nullifierHash] = true;
+        election.candidateVotes[candidateToVote]++; // Increment vote for candidate 0 (for simplicity)
+        election.candidates[candidateToVote].voteCount++;
 
         emit VoteCast(_electionId, _nullifierHash);
     }
@@ -102,4 +110,50 @@ contract Voting is Ownable {
         Candidate storage candidate = election.candidates[_candidateId];
         return (candidate.id, candidate.name, candidate.voteCount);
     }
+
+    function getWinner(
+        uint256 _electionId
+    )
+        external
+        returns (
+            uint256 winnerId,
+            string memory winnerName,
+            uint256 highestVoteCount
+        )
+    {
+        Election storage election = elections[_electionId];
+
+        uint256 maxVotes = 0;
+        uint256 leadingCandidateId;
+
+        for (uint256 i = 0; i < election.candidateCount; i++) {
+            Candidate storage candidate = election.candidates[i];
+            emit CandidateVoteCount(
+                candidate.id,
+                candidate.name,
+                candidate.voteCount
+            );
+
+            if (candidate.voteCount > maxVotes) {
+                maxVotes = candidate.voteCount;
+                leadingCandidateId = i;
+            }
+        }
+
+        Candidate storage winner = election.candidates[leadingCandidateId];
+        return (winner.id, winner.name, winner.voteCount);
+    }
+
+    // function emitVoteCounts(uint256 _electionId) external {
+    //     Election storage election = elections[_electionId];
+
+    //     for (uint256 i = 0; i < election.candidateCount; i++) {
+    //         Candidate storage candidate = election.candidates[i];
+    //         emit CandidateVoteCount(
+    //             candidate.id,
+    //             candidate.name,
+    //             candidate.voteCount
+    //         );
+    //     }
+    // }
 }

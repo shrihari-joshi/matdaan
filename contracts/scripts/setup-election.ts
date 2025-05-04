@@ -1,13 +1,12 @@
 import { ethers } from "hardhat";
 
 async function main() {
-    const VOTING_ADDRESS = '0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f';
-    const VOTE_COUNTER_ADDRESS = '0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d';
-    const ZKP_VERIFIER_ADDRESS = '0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6';
-    const ELECTION_MANAGER_ADDRESS = '0x04C89607413713Ec9775E14b954286519d836FEf';
+
+    const VOTING_ADDRESS = '0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44';
+    const ZKP_VERIFIER_ADDRESS = '0xFD6F7A6a5c21A3f503EBaE7a473639974379c351';
+    const ELECTION_MANAGER_ADDRESS = '0xa6e99A4ED7498b3cdDCBB61a6A607a4925Faa1B7';
 
     const voting = await ethers.getContractAt("Voting", VOTING_ADDRESS);
-    const voteCounter = await ethers.getContractAt("VoteCounter", VOTE_COUNTER_ADDRESS);
     const zkpVerifier = await ethers.getContractAt("SimpleZKPVerifier", ZKP_VERIFIER_ADDRESS);
     const electionManager = await ethers.getContractAt("ElectionManager", ELECTION_MANAGER_ADDRESS);
 
@@ -36,13 +35,11 @@ async function main() {
     console.log("Registering election in ElectionManager...");
     const registerTx = await electionManager.registerElection(
         electionTitle,
-        VOTING_ADDRESS,
-        VOTE_COUNTER_ADDRESS
+        VOTING_ADDRESS
     );
     await registerTx.wait();
     console.log("Election registered in ElectionManager");
 
-    // STEP 4: Add mock voters to ZKPVerifier
     console.log("Setting up voter verification...");
 
     const mockVoterHashes = [
@@ -62,15 +59,12 @@ async function main() {
     await addVotersTx.wait();
     console.log("Mock voters added to ZKP verifier");
 
-    // STEP 5: Print test voter secrets and nullifiers
     console.log("\nTest Voter Details (for demo purposes):");
     for (let i = 0; i < mockVoterHashes.length; i++) {
-        const secret = ethers.keccak256(ethers.toUtf8Bytes(`secret${i + 1}`));
-        const nullifier = await zkpVerifier.generateNullifier(mockVoterHashes[i], secret, electionId);
+        const nullifier = await zkpVerifier.generateNullifier(mockVoterHashes[i]);
 
         console.log(`Voter ${i + 1}:`);
         console.log(`  - Voter Hash: ${mockVoterHashes[i]}`);
-        console.log(`  - Secret: ${secret}`);
         console.log(`  - Nullifier Hash: ${nullifier}`);
     }
 

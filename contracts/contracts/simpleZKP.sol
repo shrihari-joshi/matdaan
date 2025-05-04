@@ -45,11 +45,9 @@ contract SimpleZKPVerifier is Ownable {
     }
 
     function generateNullifier(
-        bytes32 _voterHash,
-        bytes32 _secret,
-        uint256 _electionId
+        bytes32 _voterHash
     ) external pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_voterHash, _secret, _electionId));
+        return keccak256(abi.encodePacked(_voterHash));
     }
 
     function verifyVoteCommitment(

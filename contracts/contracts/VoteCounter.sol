@@ -36,23 +36,13 @@ contract VoteCounter is Ownable {
     function revealVote(
         uint256 _electionId,
         bytes32 _nullifierHash,
-        uint256 _candidateId,
-        bytes32 _secret
+        uint256 _candidateId
     ) external {
         VoteResult storage result = results[_electionId];
         require(
             voteRegistry[_electionId][_nullifierHash] == 0,
             "Vote already revealed"
         );
-        bytes32 computedCommitment = keccak256(
-            abi.encodePacked(_candidateId, _secret)
-        );
-        require(
-            voteRegistry[_electionId][_nullifierHash] ==
-                uint256(computedCommitment),
-            "Vote commitment mismatch"
-        );
-
         result.candidateVotes[_candidateId]++;
         result.totalVotes++;
 
